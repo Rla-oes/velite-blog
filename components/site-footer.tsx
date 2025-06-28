@@ -16,6 +16,9 @@ export function SiteFooter() {
             <Icons.gitHub className="h-6 w-6" />
           </a>
         </div>
+        <p className="text-sm text-muted-foreground text-center">
+          Blog by Minseo Kim (Reina)
+        </p>
       </div>
     </footer>
   );
