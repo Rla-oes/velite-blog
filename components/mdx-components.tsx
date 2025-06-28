@@ -4,8 +4,13 @@ import { Callout } from "./callout";
 import { cn } from "@/lib/utils";
 
 const useMDXComponent = (code: string) => {
-  const fn = new Function(code);
-  return fn({ ...runtime }).default;
+  try {
+    const fn = new Function(code);
+    return fn({ ...runtime }).default;
+  } catch (error) {
+    console.error("Failed to compile MDX:", error);
+    return () => <p>MDX 렌더링 실패</p>;
+  }
 };
 
 const components = {

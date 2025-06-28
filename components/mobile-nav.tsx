@@ -17,7 +17,7 @@ export function MobileNav() {
       <SheetTrigger asChild>
         <Button variant="outline" className="w-10 px-0 sm:hidden">
           <Menu className="h-5 w-5" />
-          <span className="sr-only">Toggle Theme</span>
+          <span className="sr-only">메뉴 열기</span>
         </Button>
       </SheetTrigger>
       <SheetContent side="right">
@@ -31,20 +31,18 @@ export function MobileNav() {
         </MobileLink>
         <div className="flex flex-col gap-3 mt-3">
           <MobileLink onOpenChange={setOpen} href="/blog">
-            Blog
+            블로그
           </MobileLink>
           <MobileLink onOpenChange={setOpen} href="/about">
-            About
+            소개
           </MobileLink>
-          <Link target="_blank" rel="noreferrer" href={siteConfig.links.github}>
-            GitHub
-          </Link>
           <Link
             target="_blank"
             rel="noreferrer"
-            href={siteConfig.links.twitter}
+            href={siteConfig.links.github}
+            className="text-sm font-medium"
           >
-            Twitter
+            GitHub
           </Link>
         </div>
       </SheetContent>

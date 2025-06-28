@@ -7,8 +7,8 @@ import { getAllTags, sortPosts, sortTagsByCount } from "@/lib/utils";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "My blog",
-  description: "This is a description",
+  title: "Reina.log",
+  description: "Technical notes on AI, MLOps, and web development.",
 };
 
 const POSTS_PER_PAGE = 5;
@@ -38,7 +38,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         <div className="flex-1 space-y-4">
           <h1 className="inline-block font-black text-4xl lg:text-5xl">Blog</h1>
           <p className="text-xl text-muted-foreground">
-            My ramblings on all things web dev.
+            배우고 정리한 내용들을 기록해둡니다.
           </p>
         </div>
       </div>
@@ -63,7 +63,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
               })}
             </ul>
           ) : (
-            <p>Nothing to see here yet</p>
+            <p>아직 게시된 글이 없습니다. 곧 작성 예정입니다.</p>
           )}
           <QueryPagination
             totalPages={totalPages}

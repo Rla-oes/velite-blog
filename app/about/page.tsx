@@ -3,8 +3,8 @@ import { siteConfig } from "@/config/site";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About Me",
-  description: "Information about me",
+  title: "Reina.log",
+  description: "Technical notes on AI, MLOps, and web development.",
 };
 
 export default async function AboutPage() {
@@ -28,17 +28,12 @@ export default async function AboutPage() {
             {siteConfig.author}
           </h2>
           <p className="text-muted-foreground text-center break-words">
-            Software Developer
+            AI & Backend Dev in Training
           </p>
         </div>
         <p className="text-muted-foreground text-lg py-4">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-          culpa qui officia deserunt mollit anim id est laborum
+          백엔드와 인공지능 관련 분야를 공부 중입니다.<br />
+          이 블로그는 공부하면서 정리한 내용과 생각들을 기록해두는 용도로 운영합니다.
         </p>
       </div>
     </div>

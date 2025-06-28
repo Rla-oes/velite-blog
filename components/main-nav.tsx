@@ -9,10 +9,10 @@ import { cn } from "@/lib/utils";
 export function MainNav() {
   const pathname = usePathname();
   return (
-    <nav className="flex items-center space-x-4 lg:space-x-6">
+    <nav aria-label="메인 네비게이션" className="flex items-center space-x-4 lg:space-x-6">
       <Link href="/" className="mr-6 flex items-center space-x-2">
         <Icons.logo className="h-6 w-6" />
-        <span className="font-bold">{siteConfig.name}</span>
+        <span className="font-bold">{siteConfig.name || "Reina.log"}</span>
       </Link>
       <Link
         href="/blog"
@@ -21,7 +21,7 @@ export function MainNav() {
           pathname === "/blog" ? "text-foreground" : "text-foreground/60"
         )}
       >
-        Blog
+        블로그
       </Link>
       <Link
         href="/about"
@@ -30,7 +30,7 @@ export function MainNav() {
           pathname === "/about" ? "text-foreground" : "text-foreground/60"
         )}
       >
-        About
+        소개
       </Link>
     </nav>
   );
