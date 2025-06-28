@@ -26,3 +26,5 @@ export function MDXContent({ code }: MdxProps) {
   const Component = useMDXComponent(code);
   return <Component components={components} />;
 }
+
+MDXContent.displayName = "MDXContent";
