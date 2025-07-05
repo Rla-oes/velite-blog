@@ -1,0 +1,108 @@
+---
+title: "[Co-Week Academy] 현실을 3차원으로: AI 재구성 기술"
+description: "SfM부터 NeRF, Gaussian Splatting까지 3D Reconstruction 핵심 기술 정리"
+date: 2025-07-05
+published: true
+tags: ["Co-Week Academy", "Computer Vision", "AI", "3D Graphics"]
+---
+
+# 현실을 3차원으로: AI 재구성 기술
+
+현실 세계는 3차원이지만, 우리가 사용하는 대부분의 이미지 센서는 2차원 정보를 담는다.  
+3차원 정보를 복원하기 위해선 **깊이(Depth)** 정보를 재구성하는 과정이 필요하다.  
+이 글에서는 전통적인 방법인 **Structure from Motion**부터 최신 AI 기반 기법인 **NeRF**, **3D Gaussian Splatting**까지 기술적으로 정리한다.
+
+---
+
+## 📷 Pinhole Camera Model: 깊이를 잃는 구조
+
+- 현실은 3차원(3D)이지만, 카메라 센서는 2차원(2D)으로만 기록
+- 빛이 하나의 점(pinhole)을 통해 센서에 투영 → 깊이 정보 소실
+- 이를 **Dimensionality Reduction Machine**이라 부른다
+
+---
+
+## 깊이 복원의 조건: Stereo Vision
+
+- 카메라 한 대로는 깊이를 알 수 없다
+- 두 대의 카메라로 같은 물체를 보면 시차(disparity)가 발생
+- 이 시차를 통해 깊이를 추정할 수 있음
+
+> 시차가 클수록 가까운 물체, 작을수록 먼 물체
+
+---
+
+## Structure from Motion (SfM)
+
+- 입력: 다양한 시점에서 찍은 이미지
+- 출력: **Sparse 3D Point Cloud**
+- 특징점 추출 → 카메라 위치 추정 → 포인트 클라우드 구성
+
+### 장점
+- 비교적 정확한 지오메트리 복원
+
+### 한계
+- Sparse 결과물 (점 기반)
+- Texture나 겹침이 많은 영역은 복원 어려움
+
+---
+
+## Novel View Synthesis (NVS)
+
+> 보지 않은 시점의 이미지를 만들어주는 AI 기반 기술  
+> 대표 기법: NeRF, Gaussian Splatting
+
+---
+
+## Neural Radiance Fields (NeRF)
+
+- 입력: 여러 시점 이미지, 카메라 파라미터
+- 출력: 보지 않은 시점의 이미지
+- 핵심 함수:  
+  `f(x, d) → (color, density)`
+
+### 볼륨 렌더링 수식
+
+$$
+C(\mathbf{r}) = \int_{t_n}^{t_f} T(t) \cdot \sigma(\mathbf{r}(t)) \cdot \mathbf{c}(\mathbf{r}(t), \mathbf{d}) dt
+$$
+
+- **σ(𝐫(t))**: 해당 위치의 밀도 (Density)
+- **𝐜(𝐫(t), 𝐝)**: 해당 방향에서의 색 (Color)
+- **T(t)**: 누적 transmittance (광선이 도달하기 전 얼마나 흡수됐는지)
+
+$$
+T(t) = \exp\left(-\int_{t_n}^{t} \sigma(\mathbf{r}(s))\, ds\right)
+$$
+
+---
+
+## 3D Gaussian Splatting
+
+3D 공간에 수천~수십만 개의 **가우시안 블롭**을 배치하여 장면을 복원하는 방식
+렌더링 시에는 AI 추론 없이, 미리 학습된 Gaussian의 속성만으로 이미지를 빠르게 생성 가능.
+
+### 학습 요소
+
+- 각 Gaussian의 위치
+- 크기
+- 회전 (Rotation)
+- 색상 (Color)
+- 밀도 (Density)
+- 투명도 (Opacity)
+
+### 렌더링 과정
+
+1. 카메라로부터 광선을 쏨
+2. 해당 광선과 겹치는 Gaussian들을 찾음
+3. 이들의 색과 밀도를 누적하여 픽셀의 최종 색을 계산
+
+---
+
+## 기술 비교 요약
+
+| 기술                  | 출력 형태         | 속도     | 학습 여부   | 주요 단점             |
+|----------------------|------------------|----------|------------|----------------------|
+| Structure from Motion| Point Cloud      | 빠름     | 비학습     | Sparse, 구멍 많음     |
+| NeRF                 | Volume + Color   | 느림     | 학습 필요  | 느린 렌더링           |
+| Gaussian Splatting   | Blobby Volume    | 매우 빠름| 학습 필요  | 구조 해석 어려움      |

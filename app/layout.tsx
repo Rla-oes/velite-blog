@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/site-header";
 import { Providers } from "@/components/providers";
 import { siteConfig } from "@/config/site";
 import { SiteFooter } from "@/components/site-footer";
+import 'katex/dist/katex.min.css';
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
