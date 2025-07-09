@@ -14,6 +14,18 @@ export function SiteHeader() {
         <MainNav />
         <div className="flex flex-1 items-center justify-end space-x-2">
           <nav className="flex items-center">
+            <a
+              href="https://hitscounter.dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <img
+                src="https://hitscounter.dev/api/hit?url=https%3A%2F%2Freina-log.vercel.app%2F&label=visits&icon=eye&color=%23000&message=&style=flat-square&tz=Asia%2FSeoul"
+                alt="visits"
+                style={{ height: "20px", marginRight: "8px" }}
+              />
+            </a>
             <Link href={siteConfig.links.github} target="_blank" rel="noreferrer">
               <div
                 className={cn(
