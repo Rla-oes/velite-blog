@@ -17,8 +17,12 @@ export function PostItem({
   title,
   description,
   date,
-  tags,
+  tags = [],
 }: PostItemProps) {
+  const MAX_TAGS = 5;
+  const displayedTags = tags.slice(0, MAX_TAGS);
+  const hiddenTagCount = tags.length - MAX_TAGS;
+
   return (
     <article className="flex flex-col gap-2 border-border border-b py-3">
       <div>
@@ -26,10 +30,15 @@ export function PostItem({
           <Link href={"/" + slug}>{title}</Link>
         </h2>
       </div>
-      <div className="flex gap-2">
-        {tags?.map((tag) => (
+      <div className="flex gap-2 flex-wrap items-center">
+        {displayedTags.map((tag) => (
           <Tag tag={tag} key={tag} />
         ))}
+        {hiddenTagCount > 0 && (
+          <span className="text-xs text-muted-foreground font-medium">
+            +{hiddenTagCount}
+          </span>
+        )}
       </div>
       <div className="max-w-none text-muted-foreground">{description}</div>
       <div className="flex justify-between items-center">

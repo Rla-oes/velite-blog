@@ -1,0 +1,111 @@
+---
+title: "[Co-Week Academy] 시큐어 코딩"
+description: "현대 애플리케이션 보안 과제부터 DevSecOps, Zero Trust, 위협 모델링, 실전 사고 사례 정리"
+date: 2025-07-10
+published: true
+tags: [
+  "Secure Coding",
+  "DevSecOps",
+  "Application Security",
+  "Threat Modeling"
+]
+---
+
+> 본 글은 2025 Co-Week Academy의 시큐어 코딩 강의를 기반으로 작성된 기술 중심 요약입니다.
+
+# 시큐어 코딩과 안전한 소프트웨어 개발
+
+## 1. 현대 애플리케이션의 보안 과제
+
+### 현실 위협 현황
+- 최근 3년간 **개인정보 유출** 사고 다발
+- **인터넷 트래픽의 52%**는 봇, 그중 절반은 악성 봇
+- **API 연결 환경** 확대 → IoT, 클라우드, 모바일 모두 취약점 노출
+- 여전히 효과적인 **애플리케이션 계층 DoS 공격**
+
+### DevOps에서의 보안 한계
+- 빠른 개발 주기 → 보안 적용 미비
+- 보안은 나중에 붙이는 것이 아니라, **처음부터 내재화되어야 함**
+
+---
+
+## 2. 시큐어 코딩과 SW개발보안 프로세스
+
+### DevSecOps
+- **Dev + Sec + Ops**: 보안이 개발과 운영 전 단계에 통합
+- 코드 작성부터 배포, 모니터링까지 **보안 자동화**
+- 정적 분석(SAST), 동적 분석(DAST), IAST, SCA 등 도구 사용
+
+### Security By Design
+- 설계 초기 단계에서 **보안 위협 모델링**을 수행하고 통제 방안 수립
+- 보안 요구사항 → 설계에 반영 → 테스트까지 연계
+
+### Zero Trust 원칙
+- “Never Trust, Always Verify”
+- 기기 인증 + 사용자 인증 + 접근 제어 엔진의 3중 구조
+- 대표 사례: Google BeyondCorp Architecture
+
+---
+
+## 3. 실전 사고 사례로 보는 시큐어 코딩
+
+### 스마트 컨트랙트 오버플로우
+```solidity
+if(balances[_to] + value < balances[_to]) revert();
+- Overflow 발생 → 의도하지 않은 금액 전송
+- **SafeMath** 라이브러리로 방어 가능
+
+### OSS 취약점: Log4j
+- Apache Log4j의 RCE 취약점 (CVE-2021-44228)
+- 로그 메시지에 포함된 코드가 실행됨
+
+### 공급망 해킹과 SBOM
+- SBOM (Software Bill of Materials): 사용된 컴포넌트 명세화
+- 오픈소스 및 의존성 라이브러리의 **보안 추적 및 대응** 필수
+
+## 4. 국내 SW개발보안 기준
+### 행정안전부 가이드
+- 개발과정에서 보안 내재화 기준 제시
+- 구현단계 49개 보안약점 제거 항목 제시
+- **보안 항목 예시**
+    - 입력값 검증
+    - 인증/인가
+    - 에러처리
+    - 세션 관리
+    - 로깅 및 암호화
+
+### 과학기술정보통신부 SW산업진흥법
+- 민간 SW 개발에도 보안 적용 의무화
+- 보안과 안전의 개념을 별도로 구분해 관리
+
+## 5. 글로벌 보안 기준 및 도구
+### NIST SSDF
+- 소프트웨어 개발 생애주기 전반에 걸친 보안 통합 지침
+- 자동화 도구 활용, 위협 식별 및 설계 반영 강조
+
+### NIS2 Directive
+- EU 사이버보안 강화법안
+- 위험 분석, 위기 대응, 공급망 보안 요구
+
+### OWASP Top 10
+| 순번 | 취약점                    | 대표 대응 방안            |
+| -- | ---------------------- | ------------------- |
+| 1  | Broken Access Control  | RBAC, 최소 권한         |
+| 2  | Cryptographic Failures | HTTPS, Hashing      |
+| 3  | Injection (SQL/XSS 등)  | Prepared Statements |
+| 4  | Insecure Design        | Threat Modeling     |
+| 5  | Misconfiguration       | 기본값 변경, 보안 설정       |
+| …  | 등                      |                     |
+
+## 6. 취약점 관리 체계: CVE & CWE
+### CVE (Common Vulnerabilities and Exposures)
+- 공개된 보안 취약점에 대한 고유 ID 할당 시스템
+- 예시: CVE-2022-24086 (Adobe Commerce RCE)
+
+### CWE (Common Weakness Enumeration)
+- 소프트웨어 보안 약점을 분류하고 체계화
+- CWE Top 25: 가장 위험한 취약점 우선순위 제공
+- 예시:
+    - CWE-787: Out-of-bounds Write
+    - CWE-79: XSS
+    - CWE-89: SQL Injection

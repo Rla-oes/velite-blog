@@ -1,0 +1,183 @@
+---
+title: "[Co-Week Academy] 자율주행을 위한 AI 기술"
+description: "객체 인식부터 2D/3D 탐지까지, 자율주행 기술에서 사용되는 AI 기반 객체 탐지 기술 정리"
+date: 2025-07-10
+published: true
+tags: ["Object Detection", "Autonomous Driving", "Deep Learning", "Computer Vision", "3D Perception", "AI", "YOLO", "RCNN", "Transformers"]
+---
+
+> 본 포스팅은 2025 Co-Week Academy 참여 후 강의 내용을 정리한 글입니다.
+
+# 자율주행을 위한 AI 기술
+
+## 객체 인식의 기본 유형
+
+1. **Image Classification**  
+   - 이미지 전체에 하나의 레이블 부여  
+   - 자율주행에선 실용성이 떨어짐
+
+2. **Semantic Segmentation**  
+   - 각 픽셀 단위로 클래스 분류  
+   - 도로/하늘/차량 등 픽셀 단위로 레이블링
+
+3. **Object Detection (2D)**  
+   - 가장 일반적이고 핵심적인 기법  
+   - 객체마다 바운딩 박스 + 클래스 + 신뢰도 출력
+
+4. **Instance Segmentation**  
+   - 객체를 구분하고 식별(ID)까지 수행 (예: 번호 붙이기)
+
+---
+
+## 자율주행 객체 탐지의 문제
+
+- **입력(Input)**:  
+  - RGB 이미지 또는 LiDAR 스캔 (point cloud)
+  
+- **출력(Output)**:  
+  - 2D/3D 바운딩 박스  
+  - 클래스 레이블 (예: car, pedestrian 등)  
+  - 신뢰도(Confidence Score)
+
+### 주요 문제점들
+
+- **카테고리 다양성**: 도로 위에는 사람, 차, 자전거 등 다양한 객체 존재
+- **Intraclass Variation**: 같은 클래스 내 다양한 형태 (의자, 자동차)
+- **Viewpoint 변화**: 전/측/후방에서 본 형태가 상이
+- **조도 변화**: 낮/밤, 역광 등 다양한 환경
+- **배경 잡음(Clutter)**: 도로 주변 환경이 객체 인식을 방해
+- **Occlusion**: 객체가 다른 객체에 가려짐
+- **Context Sensitivity**: 같은 형태라도 주변 맥락에 따라 다르게 인식
+
+---
+
+## 성능 평가 지표
+
+### Intersection over Union (IoU)
+
+$$
+IoU = \frac{Area\ of\ Overlap}{Area\ of\ Union}
+$$
+
+- 0.5 이상이면 "탐지 성공"으로 간주
+
+### Average Precision (AP)
+
+- 다양한 confidence threshold에 따라 Precision vs Recall 곡선을 그리고 면적(Area under PR curve) 계산
+
+### Precision & Recall
+
+$$
+Precision = \frac{TP}{TP + FP}
+$$
+
+$$
+Recall = \frac{TP}{TP + FN}
+$$
+
+---
+
+## 고전적 객체 탐지 기법
+
+### Sliding Window
+
+- 이미지 전역을 일정 크기 윈도우로 스캔하며 오브젝트 판단
+- 중복된 탐지는 Non-Max Suppression으로 제거
+
+### HOG (Histogram of Oriented Gradients)
+
+- 이미지의 gradient 방향과 크기를 histogram으로 정리하여 feature vector로 사용
+
+### Part-Based Models
+
+- 얼굴, 자동차 등 구조적인 형태를 파악해 파트 단위로 모델링
+
+> 고전 기법은 특징 추출, 후보 생성, 분류를 **사람이 설계**해야 하며 계산량이 크고 일반화가 어려움
+
+---
+
+## 딥러닝 기반 탐지: RCNN 계열
+
+### RCNN (2014)
+
+1. Selective Search로 후보 박스 추출
+2. 각 박스를 CNN에 넣어 feature 추출 및 분류
+3. 박스 보정(regression)
+
+### Fast RCNN
+
+- 전체 이미지에서 feature map 추출
+- ROI Pooling을 통해 각 박스에 적용 (연산 공유)
+
+### Faster RCNN
+
+- Region Proposal Network(RPN) 사용
+- CNN feature를 활용해 proposal 자체도 학습 기반으로 생성
+
+---
+
+## Feature Pyramid Network (FPN)
+
+- 다양한 스케일의 객체 탐지를 위해 피처 맵을 pyramid 형태로 구성
+- 인코딩-디코딩을 섞어 작은/큰 객체 모두 잘 탐지
+- 고양이 예시: 멀리 있는 작은 객체도 인식 가능하게 개선
+
+---
+
+## 배경-객체 클래스 불균형 문제
+
+- 대부분의 픽셀/박스는 배경 클래스
+- 해결 방법:
+
+  1. **Focal Loss**: 어려운 샘플에 더 큰 가중치 부여
+  2. **Cascade Detection**: 후보를 점진적으로 정제
+  3. **Quantization**: 이미지 전체를 coarse하게 grid로 나눠 예측 (YOLO 계열)
+
+---
+
+## YOLO 및 Single-Stage Detector
+
+- **YOLO (You Only Look Once)**
+
+  - 이미지를 grid로 나누고 각 cell에서 동시에 클래스 + 박스 예측
+  - 장점: 속도 빠름
+  - 단점: 정확도 떨어짐 (especially small objects)
+
+---
+
+## DETR: Transformer 기반 탐지
+
+- CNN 대신 **Transformer 인코더-디코더** 구조 사용
+- Object Queries와 Multi-head Attention으로 탐지 수행
+- 질문 기반 탐지 가능 (ex. "Where is the left-turn blinker?")
+
+---
+
+## 3D Object Detection
+
+- 3D Bounding Box는 7~9개의 파라미터 필요:
+
+  - 위치(x, y, z), 크기(w, h, l), 회전(Roll, Pitch, Yaw)
+  - 일반적으로 Roll/Pitch는 0으로 가정
+
+- **Input Modality**
+
+  - **Image-based (Mono)**: Monocular depth 추정 → pseudo-LiDAR 변환
+  - **LiDAR-based**:
+
+    - PointNet, VoxelNet, PIXOR 등
+    - 포인트 클라우드를 이미지처럼 처리
+
+- **3D IoU**: 교차/합집합 기반 평가
+
+---
+
+## 정리
+
+| 구분                 | 주요 기술/모델                                    |
+| ------------------ | ------------------------------------------- |
+| Feature Extraction | CNN, HOG, FPN                               |
+| Object Proposal    | Selective Search, RPN                       |
+| Detection Models   | RCNN 계열, YOLO, DETR                         |
+| 3D Detection       | PointNet, VoxelNet, MonoDepth               |
+| 성능 지표              | IoU, AP, Precision, Recall                  |

@@ -1,0 +1,127 @@
+---
+title: "[Co-Week Academy] 자율주행 모빌리티를 위한 계산과학 기술"
+description: "인지-판단-제어로 나뉜 자율주행 모빌리티의 구조와 계산과학 기술 정리"
+date: 2025-07-10
+published: true
+tags: ["Co-Week Academy", "Autonomous Mobility", "Autonomous Driving", "SLAM", "Computational Robotics"]
+---
+
+> 본 포스팅은 2025 Co-Week Academy 참여 후 강의 내용을 정리한 글입니다.
+
+# 자율주행 모빌리티를 위한 계산과학 기술
+
+## 자율주행 시스템의 구조
+
+### 1. 인지 (Perception & Estimation)
+- 센서를 통해 주변 환경 및 자차 상태를 **이해**하는 과정
+- 단순한 센싱이 아니라, 베이지안 추론 기반의 인퍼런스를 통해 상태를 추정
+- 주로 사용되는 센서: 카메라, LiDAR, IMU, UWB 등
+- 핵심 기술:
+  - 베이지안 추론: $ p(h|e) = \frac{p(e|h)p(h)}{p(e)} $
+  - SLAM (Simultaneous Localization and Mapping)
+  - 칼만 필터, 파티클 필터, EM 알고리즘
+  - RGB-D 기반 Point Cloud를 통한 공간 인식
+- 핵심 수학 도구: 선형대수, 확률통계, 최적화, Lie Group 기하
+
+### 2. 판단 (Planning & Decision Making)
+- 주어진 인지 정보를 바탕으로 최적 경로/행동 계획 수립
+- Path Planning → Trajectory Planning으로 구분
+- 주요 기법:
+  - Trajectory Optimization (e.g. SCP, LP, QP, QCQP, MICP)
+  - Model Predictive Control (MPC)
+  - 강화학습 기반 정책 결정
+
+### 3. 제어 (Control)
+- 판단된 행동을 **실행**하는 단계
+- 제어기의 목적은 모션을 안정적이고 정밀하게 수행하는 것
+- 자주 쓰이는 기법:
+  - PID, LQR
+  - 실시간 최적 제어 (Real-Time Embedded Optimization)
+  - Convex Optimal Control, MPC
+
+---
+
+## Relative Pose
+
+- 모든 센싱/추정은 좌표계 간 변환으로 환원됨
+- 서로 다른 좌표계 간 관계를 수학적으로 표현한 것이 Relative Pose
+- 수학적으로는 Homogeneous Transformation Matrix로 표현
+- 구성 요소:
+  - Translation (위치 차이)
+  - Rotation (회전 행렬 또는 쿼터니언)
+
+$$
+T = \begin{bmatrix} R & t \\ 0 & 1 \end{bmatrix}
+$$
+
+- Pose Graph로 여러 객체 간 상대 위치 관계 모델링 가능
+
+---
+
+## 센서 퓨전 & 캘리브레이션
+
+### Sensor Fusion을 위해 필요한 것:
+
+* 서로 다른 센서들의 좌표계를 일치시킬 수 있어야 함
+* 이때 사용하는 수학: Least-Squares Optimization, Matrix Algebra
+* 오프라인에서 Extrinsic Calibration 수행 가능
+
+### 예시: 3가지 센서 융합
+
+* 카메라 + 라이다 + IMU
+* 센서간 상대 위치/자세(Relative Pose)를 정확히 추정해야 데이터 융합 가능
+
+---
+
+## 로컬라이제이션(Localization)과 매핑(Mapping)
+
+* 로컬라이제이션: 카메라 또는 로봇이 "나는 어디에 있는가?"를 추정
+* 매핑: "주변 환경의 어떤 객체가 어디에 있는가?"를 추정
+* SLAM = 두 작업을 동시에 수행
+
+### 대표 알고리즘
+
+* FAST-LIVO2 (HKU MaRS Lab)
+
+  * LiDAR + IMU + Vision 기반 로컬라이제이션
+  * Least-Squares Optimization으로 pose 추정
+
+---
+
+## 모션 계획과 최적화
+
+### 문제 정의
+
+* 특정 목표 위치까지 시간과 에너지를 최소화하며 도달
+* 경로는 연속함수(trajectory)로 모델링
+* 비선형 제약 조건 존재 → 비선형 최적화 문제(NLP)로 전환
+
+### 주요 해법
+
+* Direct Method (Transcription)
+
+  * 예: Direct Single Shooting, Multiple Shooting, Collocation
+* Convexification
+
+  * 비선형 제약을 다루기 위해 Quadratic 또는 Conic Programming 사용
+
+---
+
+## 강화학습 기반 End-to-End 구조
+
+* Sensing → Planning → Acting 전 과정을 딥러닝 기반으로 통합
+* Pixel-to-Torque 형태로도 설명됨
+* 병렬처리와 분산학습 기술 필요
+
+---
+
+## Core Mathematical Foundations
+
+| 구분                           | 설명                              |
+| ---------------------------- | ------------------------------- |
+| **Numerical Linear Algebra** | 좌표 변환, Least Squares, Eigen/SVD |
+| **Computational Statistics** | 베이지안 추론, 확률 지도 생성               |
+| **Numerical Optimization**   | 경로 계획, 제어, 강화학습 최적화             |
+| **Computational Geometry**   | Lie Group 기반 포즈 표현 및 변환         |
+
+---
