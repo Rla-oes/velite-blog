@@ -19,7 +19,7 @@ export function PostItem({
   date,
   tags = [],
 }: PostItemProps) {
-  const MAX_TAGS = 4;
+  const MAX_TAGS = 3;
   const displayedTags = tags.slice(0, MAX_TAGS);
   const hiddenTagCount = tags.length - MAX_TAGS;
 
