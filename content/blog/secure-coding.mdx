@@ -52,6 +52,8 @@ tags: [
 ### 스마트 컨트랙트 오버플로우
 ```solidity
 if(balances[_to] + value < balances[_to]) revert();
+```
+
 - Overflow 발생 → 의도하지 않은 금액 전송
 - **SafeMath** 라이브러리로 방어 가능
 
