@@ -1,0 +1,485 @@
+---
+title: "[LG Aimers] Convex Optimization"
+descriptiademon: "Constrained Optimization 정리"
+date: 2025-07-12
+published: true
+tags: ["LG Aimers", "Mathematics", "Machine Learning"]
+---
+
+> 본 포스팅은 LG Aimers 7기 Phase 1 강의 내용을 정리한 글입니다. 모든 출처는 LG Aimers에 있습니다.
+
+# Convex Optimization
+
+---
+
+## Constrained Optimization and Lagrange Multipliers
+
+### 1. 문제 정의
+
+#### **표준 형태의 제한 조건 최적화 문제 (Standard Form)**
+
+다음과 같은 형태의 최적화 문제를 다룬다:
+
+$$
+\text{minimize } f(x)
+$$
+
+$$
+\text{subject to } g_i(x) \leq 0,\quad i = 1, 2, ..., m \quad \text{(부등식 제약조건)}
+$$
+
+$$
+\qquad\quad h_j(x) = 0,\quad j = 1, 2, ..., p \quad \text{(등식 제약조건)}
+$$
+
+* **목적함수** $f(x)$: 최소화하고자 하는 대상.
+* **변수** $x \in \mathbb{R}^n$
+* **Feasible set** (제약 조건을 만족하는 해의 집합): 공집합이 아니라고 가정함.
+* **최적값**: $p^*$, **최적 해**: $x^*$
+
+---
+
+### 2. 라그랑주 승수법 (Lagrange Multipliers)
+
+#### 핵심 아이디어: 목적 함수에 제약 조건을 **가중합** 형태로 추가
+
+> 제약 조건을 목적 함수에 반영하여 새로운 함수 **Lagrangian** 정의
+
+$$
+\mathcal{L}(x, \lambda, \nu) = f(x) + \sum_{i=1}^m \lambda_i g_i(x) + \sum_{j=1}^p \nu_j h_j(x)
+$$
+
+* $\lambda_i \geq 0$: 부등식 제약 조건의 **라그랑주 승수 (Lagrange multipliers)**
+* $\nu_j$: 등식 제약 조건의 승수
+
+---
+
+### 3. 라그랑주 **쌍대 함수 (Dual Function)**
+
+> 어떤 $(\lambda, \nu)$에 대해, 다음 함수는 $f(x)$의 **하한(lower bound)** 을 제공
+
+$$
+D(\lambda, \nu) = \inf_x \mathcal{L}(x, \lambda, \nu)
+$$
+
+* $D(\lambda, \nu) \leq f(x)$가 항상 성립 (모든 feasible $x$에 대해)
+* $D(\lambda, \nu) \leq p^*$: **모든 제약조건을 만족하는 최적값**보다 작거나 같음 → 이를 **약한 쌍대성 (Weak Duality)** 라고 함
+
+---
+
+### 4. **쌍대 문제 (Dual Problem)**
+
+> 쌍대 함수 $D(\lambda, \nu)$의 **최댓값**을 구함으로써 primal 문제의 하한을 최대화
+
+$$
+\text{maximize } D(\lambda, \nu)
+$$
+
+$$
+\text{subject to } \lambda \geq 0
+$$
+
+* 항상 **볼록 최적화 문제 (convex optimization)** 가 됨
+* 최적값을 $d^*$ 라고 하면:
+
+$$
+d^* \leq p^* \quad (\text{Weak Duality})
+$$
+
+* 만약 **Strong Duality**가 성립한다면:
+
+$$
+d^* = p^*
+$$
+
+---
+
+### 5. **KKT 조건 (Karush–Kuhn–Tucker Conditions)**
+
+> **Primal-dual 최적성**을 위한 **필요 조건**, Convex optimization의 경우 **충분조건**도 됨
+
+KKT 조건은 다음을 포함함:
+
+#### (1) **Stationarity (정지 조건)**:
+
+$$
+\nabla f(x^*) + \sum_{i=1}^m \lambda_i^* \nabla g_i(x^*) + \sum_{j=1}^p \nu_j^* \nabla h_j(x^*) = 0
+$$
+
+#### (2) **Primal feasibility (원문제 제약조건 만족)**:
+
+$$
+g_i(x^*) \leq 0, \quad h_j(x^*) = 0
+$$
+
+#### (3) **Dual feasibility (쌍대 변수 조건)**:
+
+$$
+\lambda_i^* \geq 0
+$$
+
+#### (4) **Complementary slackness (여부등 조건)**:
+
+$$
+\lambda_i^* g_i(x^*) = 0
+$$
+
+---
+
+### 6. 예제: 선형 계획법 (Linear Programming)
+
+#### Primal Problem
+
+$$
+\text{minimize } c^T x
+$$
+
+$$
+\text{subject to } Ax \leq b
+$$
+
+#### Dual Problem
+
+$$
+\text{maximize } -b^T \lambda
+$$
+
+$$
+\text{subject to } A^T \lambda + c = 0,\quad \lambda \geq 0
+$$
+
+---
+
+### 7. 예제: 이차 계획법 (Quadratic Programming)
+
+#### Primal Problem
+
+$$
+\text{minimize } \frac{1}{2} x^T Q x + c^T x
+$$
+
+$$
+\text{subject to } Ax \leq b
+$$
+
+(단, $Q$는 대칭이며 양의 정부호)
+
+#### Dual Problem
+
+$$
+\text{maximize } -\frac{1}{2}(c + A^T \lambda)^T Q^{-1} (c + A^T \lambda) - \lambda^T b
+$$
+
+$$
+\text{subject to } \lambda \geq 0
+$$
+
+---
+
+## Convex Sets and Functions
+
+### 1. Convex Optimization이 중요한 이유
+
+* **머신러닝 모델 학습**은 대부분 **최적화 문제**로 표현된다.
+* 이때 **문제가 convex인지 아닌지**에 따라:
+
+  * **쉽게 풀 수 있는지**
+  * **해가 전역 최적인지**
+  * **최적화 알고리즘이 수렴하는지** 등이 달라짐
+* 그래서 우리는 convex의 수학적 정의와 조건을 정확히 알아야 함.
+
+---
+
+### Convex Set (볼록 집합)
+
+### 2. 정의
+
+**어떤 집합 $C \subseteq \mathbb{R}^n$이 convex 하다는 것의 의미**:
+
+$$
+\text{임의의 } x_1, x_2 \in C,\ \theta \in [0,1] \text{에 대해:} \quad \theta x_1 + (1 - \theta) x_2 \in C
+$$
+
+> 즉, 집합 안에 있는 두 점을 이은 **선분 전체가** 여전히 그 집합 안에 있다면 convex
+
+### 3. 예시
+
+| Convex Sets                            | Non-Convex Sets      |
+| -------------------------------------- | -------------------- |
+| 구 (ball), 선형 공간                        | 도넛, 별 모양             |
+| 선형 제약을 가진 다각형                          | 중간에 구멍 뚫린 집합         |
+| $\{ x \in \mathbb{R}^n : Ax \leq b \}$ | 이산적인 집합들 (예: 정수만 허용) |
+
+---
+
+### Convex Function (볼록 함수)
+
+### 4. 정의
+
+함수 $f: \mathbb{R}^n \rightarrow \mathbb{R}$ 이 convex 함수이려면:
+
+* 정의역(dom f)이 convex 집합이고,
+* 임의의 $x, y \in \text{dom} f$, $\theta \in [0, 1]$에 대해
+
+$$
+f(\theta x + (1 - \theta) y) \leq \theta f(x) + (1 - \theta) f(y)
+$$
+
+> 즉, **함수 그래프가 항상 선분 아래에 있다**면 convex 함수임
+
+### 5. 시각적 이해
+
+* U자형 곡선 (예: $f(x) = x^2$)은 convex
+* 산 모양 곡선 (예: $f(x) = -x^2$)은 concave
+* **선형 함수는 항상 convex이자 concave**
+
+### 6. 관련 성질
+
+| 성질                   | 의미                                              |
+| -------------------- | ----------------------------------------------- |
+| **Strictly convex**  | 위 식이 \*\*모든 $x \neq y$\*\*에 대해 **부등호가 엄격하게 성립** |
+| **Concave function** | $-f$가 convex                                    |
+| **Affine 함수 (직선)**   | 항상 convex이며, 동시에 concave                        |
+
+---
+
+### Convex Function의 조건
+
+### 7. 1차 조건 (First-Order Condition)
+
+함수 $f$가 미분 가능할 때, 다음을 만족하면 convex:
+
+$$
+f(y) \geq f(x) + \nabla f(x)^T (y - x)
+$$
+
+> 접선이 항상 위에 있음 = 접선이 함수의 **global underestimator**
+
+### 8. 2차 조건 (Second-Order Condition)
+
+함수 $f$가 이차 미분 가능할 때:
+
+$$
+f \text{ is convex } \Leftrightarrow \nabla^2 f(x) \succeq 0 \quad \forall x
+$$
+
+> 해석: **헤세 행렬이 양의 반정부호**이면 convex (모든 방향으로 볼록)
+
+### 9. 예시 함수들
+
+| 함수                    | Convex 여부                      |              |        |
+| --------------------- | ------------------------------ | ------------ | ------ |
+| $e^x$                 | convex                         |              |        |
+| $\log x$              | concave                        |              |        |
+| $x \log x$ (x > 0)    | strictly convex                |              |        |
+| $\max(x_1, ..., x_n)$ | convex                         |              |        |
+| $\log \sum e^{x_i}$   | convex                         |              |        |
+| $(\prod x_i)^{1/n}$   | concave on $\mathbb{R}_{++}^n$ |              |        |
+
+---
+
+### Convexity-Preserving Operations
+
+---
+
+### 10. Convex 함수 유지 연산
+
+1. **Non-negative 가중합**
+
+   $$
+   f(x) = \sum w_i f_i(x) \quad \text{(if } f_i \text{ are convex and } w_i \geq 0)
+   $$
+
+2. **Affine 함수 적용**
+
+   $$
+   g(x) = f(Ax + b) \Rightarrow \text{convex}
+   $$
+
+3. **Maximum**
+
+   $$
+   f(x) = \max(f_1(x), f_2(x)) \Rightarrow \text{convex if } f_i \text{ convex}
+   $$
+
+4. **합성함수 $f(x) = h(g(x))$**
+
+   * $h$: convex & non-decreasing
+   * $g$: convex
+     ⇒ $f$: convex
+
+---
+
+### 11. Pointwise Supremum (꼭지점 기반 연산)
+
+* $f(x, y)$가 $x$에 대해 convex이면:
+
+$$
+g(x) = \sup_{y \in A} f(x, y) \Rightarrow g(x) \text{도 convex}
+$$
+
+* 예시:
+  $f(x) = \sup_{y \in C} \|x - y\|$: 어떤 집합까지의 최장 거리 → convex
+
+---
+
+## Convex Optimization
+
+---
+
+### 1. 정의: Convex Optimization Problem
+
+가장 기본 형태:
+
+$$
+\text{minimize } f(x)
+$$
+
+$$
+\text{subject to } x \in X
+$$
+
+* 목적 함수 $f(x) : \mathbb{R}^n \to \mathbb{R}$는 **convex 함수**
+* 제약 조건 집합 $X \subseteq \mathbb{R}^n$은 **convex set**
+
+> 즉, 목적 함수와 제약조건 둘 다 **convex 구조**를 가지면 문제 전체가 convex optimization임
+
+---
+
+### 2. 일반 형태 (Standard Form)
+
+좀 더 구체화된 일반적인 convex optimization 문제는:
+
+$$
+\text{minimize } f(x)
+$$
+
+$$
+\text{subject to } g_i(x) \leq 0,\quad i = 1, ..., m \quad (\text{convex functions})
+$$
+
+$$
+\qquad\quad a_i^T x = b_i,\quad i = 1, ..., p \quad (\text{affine functions})
+$$
+
+> **불평등 제약 조건**은 convex 함수
+> **등식 제약 조건**은 **항상 선형(affine)** 이어야 함
+
+---
+
+### 3. Strong Duality (강한 쌍대성)
+
+* 앞서 설명한 **Weak Duality**:
+
+  $$
+  d^* \leq p^*
+  $$
+
+* **Strong Duality**는 더 강력한 개념:
+
+$$
+d^* = p^*
+$$
+
+> 즉, **쌍대 문제로 풀어도 정확히 같은 해**를 얻을 수 있음
+> → 굉장히 효율적인 해법 제공 가능!
+
+### Strong Duality가 성립하는 조건
+
+* 문제가 **convex**하고,
+* **Slater’s condition**이 만족되면 Strong Duality 성립
+
+---
+
+### 4. KKT 조건 (Karush-Kuhn-Tucker)
+
+Convex Optimization에서 핵심적인 **최적성 조건**
+
+---
+
+### KKT 조건: 다음 네 가지가 모두 만족될 때 $x^*$는 최적해
+
+1. **Stationarity (정지조건)**
+
+   $$
+   \nabla f(x^*) + \sum_{i=1}^m \lambda_i^* \nabla g_i(x^*) + \sum_{j=1}^p \nu_j^* \nabla h_j(x^*) = 0
+   $$
+
+2. **Primal Feasibility**
+
+   $$
+   g_i(x^*) \leq 0,\quad h_j(x^*) = 0
+   $$
+
+3. **Dual Feasibility**
+
+   $$
+   \lambda_i^* \geq 0
+   $$
+
+4. **Complementary Slackness**
+
+   $$
+   \lambda_i^* g_i(x^*) = 0
+   $$
+
+---
+
+### KKT의 의미 요약
+
+* **1번**은 경사 조건: 목적 함수의 변화율 + 제약 조건의 영향 = 0
+* **2번**은 제약 조건 만족성
+* **3번**은 라그랑주 승수의 유효성
+* **4번**은 활성화된 제약만 영향을 준다는 뜻
+
+---
+
+### 5. 예제: Linear Programming (LP)
+
+### Primal Problem
+
+$$
+\text{minimize } c^T x,\quad \text{subject to } Ax \leq b
+$$
+
+### Dual Problem
+
+$$
+\text{maximize } -b^T \lambda,\quad \text{subject to } A^T \lambda + c = 0,\ \lambda \geq 0
+$$
+
+* **라그랑지안**:
+
+  $$
+  \mathcal{L}(x, \lambda) = c^T x + \lambda^T (Ax - b)
+  $$
+
+* 쌍대 함수:
+
+  $$
+  D(\lambda) = \inf_x \mathcal{L}(x, \lambda) = -b^T \lambda \quad \text{(조건 만족 시)}
+  $$
+
+---
+
+### 6. 예제: Quadratic Programming (QP)
+
+### Primal Problem
+
+$$
+\text{minimize } \frac{1}{2} x^T Q x + c^T x,\quad \text{subject to } Ax \leq b
+$$
+
+(단, $Q \succ 0$: 대칭 양의 정부호 행렬)
+
+### Dual Problem
+
+$$
+\text{maximize } -\frac{1}{2}(c + A^T \lambda)^T Q^{-1}(c + A^T \lambda) - \lambda^T b
+$$
+
+$$
+\text{subject to } \lambda \geq 0
+$$
+
+---
