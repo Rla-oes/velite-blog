@@ -1,0 +1,166 @@
+---
+title: "[LG Aimers] Reinforcement Learning I"
+description: "강화학습 기초: MDP와 Planning"
+date: 2025-07-20
+published: true
+tags: ["LG Aimers", "Reinforcement Learning", "AI"]
+---
+
+> 본 포스팅은 LG Aimers 7기 Phase 1 강화학습 강의 내용을 정리한 글입니다. 모든 출처는 LG Aimers에 있습니다.
+---
+
+## **Part I – 강화학습의 기초 개념**
+
+### 1. **왜 강화학습을 배우는가?**
+
+* 우리의 삶은 본질적으로 **순차적 의사결정**의 연속이다.
+* 강화학습은 사람이 **시행착오**를 통해 의사결정을 학습하듯, 컴퓨터가 환경과 상호작용하며 **보상의 합을 최대화**하는 방향으로 학습하게 하는 프레임워크이다.
+* 단기적인 보상보다, **장기적으로 유리한 행동 시퀀스를 선택하는 것**이 핵심.
+
+---
+
+### 2. **Markov Decision Process (MDP): 문제의 수학적 정의**
+
+* **Markov Property**: 미래는 현재 상태에만 의존하며, 과거와는 독립적이다.
+* **MRP (Markov Reward Process)** = $(S, P, R, \gamma)$  
+* **MDP (Markov Decision Process)** = $(S, A, P, R, \gamma)$
+
+| 구성 요소 | 설명 |
+| -------- | ---- |
+| S | 상태 집합 (finite state space) |
+| A | 행동 집합 (action space) |
+| P | 전이 확률 $P(s' \mid s, a)$ |
+| R | 보상 함수 $R(s, a)$ 또는 상태에 따라 $R(s)$ |
+| $\gamma$ | 할인율 $(0 \leq \gamma \leq 1)$, 미래 보상의 현재 가치 환산 비율 |
+
+* **Reward**는 보통 상태별 또는 상태-행동별 보상으로 정의되며, 벡터 형태로 계산된다.
+
+---
+
+### 3. **Return과 Discount Factor**
+
+* **Return $G_t$**: 시간 t부터 미래까지 받을 보상의 할인 합계  
+  → $G_t = r_t + \gamma r_{t+1} + \gamma^2 r_{t+2} + \dots$
+
+* **Discount Factor $\gamma$**:
+  * 미래 보상이 무한히 커지는 것을 방지
+  * 현실에서 사람도 미래보다 현재 보상을 더 중요하게 여김 → $\gamma < 1$
+  * $\gamma = 0$ → 즉시 보상만 고려 / $\gamma = 1$ → 현재와 미래 동등하게 고려
+  * 무한한 Horizon에서도 수렴 가능  
+    → 예: $\sum_{t=0}^{\infty} \gamma^t r_{\max}$ = 등비수열
+
+---
+
+### 4. **Value Function과 Bellman Equation**
+
+* **Value Function $V(s)$**: 상태 s에서 시작했을 때 기대되는 return의 기댓값  
+  → $V(s) = \mathbb{E}[G_t \mid s_t = s]$
+
+* **Bellman Equation (기대값 버전)**:  
+  $V(s) = R(s) + \gamma \sum_{s'} P(s' \mid s) V(s')$
+
+* **선형 방정식**으로도 표현 가능:  
+  $(I - \gamma P)V = r$  
+  → 역행렬 계산 시 $\mathcal{O}(n^3)$ 복잡도 발생 → 계산 비효율
+
+---
+
+### 5. **정책과 MDP에서의 계획(Planning)**
+
+* **정책 $\pi$**: 어떤 상태에서 어떤 행동을 취할 확률을 나타내는 함수
+  * Deterministic: $\pi(s) = a$
+  * Stochastic: $\pi(a \mid s)$
+
+* MDP에 정책이 주어지면, **MRP로 변환 가능**  
+  → Value Function 계산에 기존 방식 적용 가능
+
+---
+
+## **Part II – 정책 평가와 개선**
+
+### 1. **Policy Evaluation (정책 평가)**
+
+* 주어진 정책 $\pi$에 대해  
+  $V^\pi(s) = \mathbb{E}_\pi[G_t \mid s_t = s]$ 계산
+
+* 반복적 DP 방식 사용:  
+  $V_{k+1}(s) = R_\pi(s) + \gamma \sum_{s'} P_\pi(s' \mid s) V_k(s')$
+
+---
+
+### 2. **Gridworld 예시: 정책 평가**
+
+* 4x4 Gridworld (16개 상태)
+* 각 이동에서 보상: -1
+* 초기 정책: **Equiprobable Random Policy**
+  * 상하좌우로 동일한 확률(0.25)로 움직임
+* 초기 $V(s) = 0$으로 시작
+* 반복적으로 업데이트되며 수렴 → 더 나은 정책 도출 가능
+
+---
+
+### 3. **Policy Improvement**
+
+* 상태-행동 가치 함수:  
+  $Q^\pi(s,a) = R(s,a) + \gamma \sum_{s'} P(s' \mid s,a) V^\pi(s')$
+
+* 더 나은 정책 $\pi'$:  
+  $\pi'(s) = \arg\max_a Q^\pi(s,a)$
+
+> 만약 개선된 정책이 기존보다 더 높은 value function을 가진다면 → 개선 성공
+
+---
+
+### 4. **Policy Iteration (정책 반복)**
+
+1. 초기 정책 $\pi_0$ 설정  
+2. 정책 평가 → $V^{\pi_0}$ 계산  
+3. 정책 개선 → $\pi_1 = \arg\max_a Q^{\pi_0}(s,a)$  
+4. 수렴할 때까지 반복
+
+> 이론적으로 유한한 상태-행동 공간에서는 반드시 수렴 → 최적 정책 $\pi^*$
+
+---
+
+### 5. **Value Iteration**
+
+* Bellman 최적 방정식을 이용해 직접 optimal value 계산:
+
+  $V_{k+1}(s) = \max_a \left[ R(s,a) + \gamma \sum_{s'} P(s' \mid s,a) V_k(s') \right]$
+
+* 정책은 value가 수렴한 후에 도출:
+
+  $\pi(s) = \arg\max_a Q(s,a)$
+
+---
+
+### 6. **수렴성과 Contraction Mapping**
+
+* Bellman operator는 **수축 연산자** → 반복하면 고정점 수렴
+* $\gamma < 1$일 때, 고유한 최적 value 존재
+* → $V_k \to V^*$
+
+---
+
+### 7. **정책 간 비교: Partial Ordering**
+
+* 정책 $\pi$와 $\pi'$가 있을 때,  
+  $\forall s, V^\pi(s) \leq V^{\pi'}(s)$이면 $\pi'$가 더 좋은 정책
+
+* 항상 $\pi$보다 같거나 나은 $\pi'$가 존재  
+* **최적 정책 $\pi^*$는 존재**하며,  
+  이에 대응하는 **Optimal Value Function $V^*$도 유일하게 존재**
+
+---
+
+### 8. **Value Iteration vs Policy Iteration**
+
+| 항목 | Policy Iteration | Value Iteration |
+| ---- | ---------------- | --------------- |
+| 평가 방식 | 정책 평가 → 정책 개선 | 벨만 최적 방정식 반복 |
+| 수렴 속도 | 빠름 (단, 평가 비용 큼) | 느릴 수 있음 (단순 연산) |
+| 구현 복잡도 | 상대적으로 높음 | 비교적 간단함 |
+| 수렴 보장 | 유한한 상태공간에서 수렴 | $\gamma < 1$일 때 수렴 |
+
+---
+
